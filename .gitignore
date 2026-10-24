@@ -1,0 +1,36 @@
+# Compiled object files
+*.o
+*.obj
+/list
+# Executables
+a.out
+*.out
+*.exe
+
+# Libraries
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Build folders
+build/
+bin/
+
+# Debug files
+*.dSYM/
+*.gcda
+*.gcno
+*.gcov
+
+# Editor temporary files
+*~
+*.swp
+*.swo
+
+# macOS files
+.DS_Store
+
+# Notes
+notes.txt

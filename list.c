@@ -27,6 +27,44 @@ struct list
 typedef struct list list;
 
 // ---------- ADD YOUR 14 FUNCTIONS HERE TO SOLVE THE COURSEWORK ----------
+list *newList(itemload e)
+{
+  return NULL;
+}
+void freeList(list *xs) {}
+void first(list *xs) {}
+void last(list *xs) {}
+bool none(list *xs)
+{
+  return false;
+}
+bool after(list *xs)
+{
+  return false;
+}
+bool before(list *xs)
+{
+  return false;
+}
+itemload get(list *xs)
+{
+  return (itemload)0;
+}
+bool set(list *xs, itemload x)
+{
+  return false;
+}
+void insertAfter(list *xs, itemload x) {}
+void insertBefore(list *xs, itemload x) {}
+bool deleteToAfter(list *xs)
+{
+  return false;
+}
+bool deleteToBefore(list *xs)
+{
+  return false;
+}
+void reverse(list *xs) {}
 
 // Test the list module, using int as the itemload type. Strings are used as
 // 'pictograms' to describe lists. Single digits represent itemloads and the '|' symbol

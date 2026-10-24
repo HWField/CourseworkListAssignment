@@ -53,20 +53,54 @@ void freeList(list *xs)
   free(xs);
 }
 
-void first(list *xs) {}
-void last(list *xs) {}
+void first(list *xs)
+{
+  xs->current = xs->none->next;
+}
+
+void last(list *xs)
+{
+  xs->current = xs->none->back;
+}
+
 bool none(list *xs)
 {
-  return false;
+  if (xs->current == xs->none)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
+
 bool after(list *xs)
 {
-  return false;
+  if (xs->current != xs->none)
+  {
+    xs->current = xs->current->next;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
+
 bool before(list *xs)
 {
-  return false;
+  if (xs->current != xs->none)
+  {
+    xs->current = xs->current->back;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
+
 itemload get(list *xs)
 {
   return (itemload)0;
@@ -381,11 +415,11 @@ void testReverse(void)
 int main(void)
 {
   testNewList();
-  // testFirst();
-  // testLast();
-  // testNone();
-  // testAfter();
-  // testBefore();
+  testFirst();
+  testLast();
+  testNone();
+  testAfter();
+  testBefore();
   // testGet();
   // testSet();
   // testInsertAfter();

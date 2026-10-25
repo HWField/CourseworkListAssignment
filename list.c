@@ -103,14 +103,53 @@ bool before(list *xs)
 
 itemload get(list *xs)
 {
-  return (itemload)0;
+  return xs->current->x;
 }
+
 bool set(list *xs, itemload x)
 {
-  return false;
+  if (xs->current != xs->none)
+  {
+    xs->current->x = x;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
-void insertAfter(list *xs, itemload x) {}
-void insertBefore(list *xs, itemload x) {}
+
+void insertAfter(list *xs, itemload x)
+{
+  node *newNode = malloc(sizeof(node));
+  newNode->x = x;
+
+  node *current = xs->current;
+  node *next = current->next;
+  newNode->back = current;
+  newNode->next = next;
+  current->next = newNode;
+  next->back = newNode;
+
+  xs->current = newNode;
+}
+
+void insertBefore(list *xs, itemload x)
+{
+  node *newNode = malloc(sizeof(node));
+  newNode->x = x;
+
+  node *current = xs->current;
+  node *previous = current->back;
+
+  newNode->back = previous;
+  newNode->next = current;
+  previous->next = newNode;
+  current->back = newNode;
+
+  xs->current = newNode;
+}
+
 bool deleteToAfter(list *xs)
 {
   return false;
@@ -420,10 +459,10 @@ int main(void)
   testNone();
   testAfter();
   testBefore();
-  // testGet();
-  // testSet();
-  // testInsertAfter();
-  // testInsertBefore();
+  testGet();
+  testSet();
+  testInsertAfter();
+  testInsertBefore();
   // testDeleteToAfter();
   // testDeleteToBefore();
   // testReverse();

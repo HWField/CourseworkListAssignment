@@ -5,8 +5,7 @@
 #include <string.h>
 
 // Each node in a doubly linked list is stored in this structure.
-struct node
-{
+struct node {
   struct node *back;
   itemload x;
   struct node *next;
@@ -20,15 +19,13 @@ typedef struct node node;
 // that holds no nodes the back and next fields of the sentinel node point to the sentinel
 // node itself. The current node refers to the currently selected itemload node in the list. If
 // the current node is the none node then no itemload is selected.
-struct list
-{
+struct list {
   node *none, *current;
 };
 typedef struct list list;
 
 // ---------- ADD YOUR 14 FUNCTIONS HERE TO SOLVE THE COURSEWORK ----------
-list *newList(itemload e)
-{
+list *newList(itemload e) {
   node *sentinelNode = malloc(sizeof(node));
   sentinelNode->x = e;
   sentinelNode->back = sentinelNode;
@@ -39,88 +36,66 @@ list *newList(itemload e)
   return newList;
 }
 
-void freeList(list *xs)
-{
-  node *c = xs->none;
-  c = c->next;
-  while (c != xs->none)
-  {
-    node *next = c->next;
-    free(c);
-    c = next;
+void freeList(list *xs) {
+  node *current = xs->none;
+  current = current->next;
+  while (current != xs->none) {
+    node *next = current->next;
+    free(current);
+    current = next;
   }
   free(xs->none);
   free(xs);
 }
 
-void first(list *xs)
-{
+void first(list *xs) {
   xs->current = xs->none->next;
 }
 
-void last(list *xs)
-{
+void last(list *xs) {
   xs->current = xs->none->back;
 }
 
-bool none(list *xs)
-{
-  if (xs->current == xs->none)
-  {
+bool none(list *xs) {
+  if (xs->current == xs->none) {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
-bool after(list *xs)
-{
-  if (xs->current != xs->none)
-  {
+bool after(list *xs) {
+  if (xs->current != xs->none) {
     xs->current = xs->current->next;
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
-bool before(list *xs)
-{
-  if (xs->current != xs->none)
-  {
+bool before(list *xs) {
+  if (xs->current != xs->none) {
     xs->current = xs->current->back;
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
-itemload get(list *xs)
-{
+itemload get(list *xs) {
   return xs->current->x;
 }
 
-bool set(list *xs, itemload x)
-{
-  if (xs->current != xs->none)
-  {
+bool set(list *xs, itemload x) {
+  if (xs->current != xs->none) {
     xs->current->x = x;
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
-void insertAfter(list *xs, itemload x)
-{
+void insertAfter(list *xs, itemload x) {
   node *newNode = malloc(sizeof(node));
   newNode->x = x;
 
@@ -134,8 +109,7 @@ void insertAfter(list *xs, itemload x)
   xs->current = newNode;
 }
 
-void insertBefore(list *xs, itemload x)
-{
+void insertBefore(list *xs, itemload x) {
   node *newNode = malloc(sizeof(node));
   newNode->x = x;
 
@@ -150,10 +124,8 @@ void insertBefore(list *xs, itemload x)
   xs->current = newNode;
 }
 
-bool deleteToAfter(list *xs)
-{
-  if (xs->current == xs->none)
-  {
+bool deleteToAfter(list *xs) {
+  if (xs->current == xs->none) {
     return false;
   }
   node *deleteNode = xs->current;
@@ -166,10 +138,8 @@ bool deleteToAfter(list *xs)
   return true;
 }
 
-bool deleteToBefore(list *xs)
-{
-  if (xs->current == xs->none)
-  {
+bool deleteToBefore(list *xs) {
+  if (xs->current == xs->none) {
     return false;
   }
   node *deleteNode = xs->current;
@@ -182,11 +152,9 @@ bool deleteToBefore(list *xs)
   return true;
 }
 
-void reverse(list *xs)
-{
+void reverse(list *xs) {
   node *current = xs->none->next;
-  while (current != xs->none)
-  {
+  while (current != xs->none) {
     node *next = current->next;
     current->next = current->back;
     current->back = next;
@@ -208,8 +176,7 @@ void reverse(list *xs)
 
 // Build a list from a pictogram, with -1 as the default itemload.
 // Note: You do not need to understand this function to solve the coursework.
-list *build(char *s)
-{
+list *build(char *s) {
   list *xs = malloc(sizeof(list));
   int n = strlen(s);
   node *nodes[n];
@@ -222,12 +189,10 @@ list *build(char *s)
   xs->none = nodes[0];
   xs->none->x = -1;
   node *p = xs->none->next;
-  for (int i = 0; i < strlen(s); i++)
-  {
+  for (int i = 0; i < strlen(s); i++) {
     if (s[i] == '|')
       xs->current = p;
-    else
-    {
+    else {
       p->x = s[i] - '0';
       p = p->next;
     }
@@ -237,8 +202,7 @@ list *build(char *s)
 
 // Destroy a list which was created with the build function and which matches a pictogram.
 // Note: You do not need to understand this function to solve the coursework.
-void destroy(list *xs, char *s)
-{
+void destroy(list *xs, char *s) {
   int n = strlen(s);
   node *nodes[n];
   nodes[0] = xs->none;
@@ -251,8 +215,7 @@ void destroy(list *xs, char *s)
 
 // Check that a list matches a pictogram.
 // Note: You do not need to understand this function to solve the coursework.
-bool match(list *xs, char *s)
-{
+bool match(list *xs, char *s) {
   int n = strlen(s);
   node *nodes[n];
   nodes[0] = xs->none;
@@ -260,21 +223,16 @@ bool match(list *xs, char *s)
     nodes[i] = nodes[i - 1]->next;
   if (nodes[n - 1]->next != xs->none)
     return false;
-  for (int i = 1; i < n; i++)
-  {
+  for (int i = 1; i < n; i++) {
     if (nodes[i]->back != nodes[i - 1])
       return false;
   }
   node *p = xs->none->next;
-  for (int i = 0; i < strlen(s); i++)
-  {
-    if (s[i] == '|')
-    {
+  for (int i = 0; i < strlen(s); i++) {
+    if (s[i] == '|') {
       if (p != xs->current)
         return false;
-    }
-    else
-    {
+    } else {
       if (p->x != s[i] - '0')
         return false;
       p = p->next;
@@ -284,8 +242,7 @@ bool match(list *xs, char *s)
 }
 
 // The tests use an enumeration to say which function to call.
-enum
-{
+enum {
   First,
   Last,
   None,
@@ -302,8 +259,7 @@ enum
 typedef int function;
 
 // A replacement for the library assert function.
-void assert(int line, bool b)
-{
+void assert(int line, bool b) {
   if (b)
     return;
   printf("The test on line %d fails.\n", line);
@@ -313,11 +269,9 @@ void assert(int line, bool b)
 // Call a given function with a possible integer argument, returning a possible
 // integer or boolean result (or -1).
 // Note: You do not need to understand this function to solve the coursework.
-int call(function f, list *xs, int arg)
-{
+int call(function f, list *xs, int arg) {
   int result = -1;
-  switch (f)
-  {
+  switch (f) {
   case None:
     result = none(xs);
     break;
@@ -362,8 +316,7 @@ int call(function f, list *xs, int arg)
 
 // Check that a given function does the right thing. The 'in' value is passed to
 // the function or is -1. The 'out' value is the expected result, or -1.
-bool check(function f, int in, char *before, char *after, int out)
-{
+bool check(function f, int in, char *before, char *after, int out) {
   list *xs = build(before);
   int result = call(f, xs, in);
   // check your list has indeed a circular list structure
@@ -378,8 +331,7 @@ bool check(function f, int in, char *before, char *after, int out)
 // Test newList, and call freeList. The test for freeList is that the memory
 // leak detector in the -fsanitize=address or -fsanitize=leak compiler option
 // reports no problems.
-void testNewList(void)
-{
+void testNewList(void) {
   list *xs = newList(-1);
   // check circular list structure
   assert(__LINE__, (xs->none == xs->none->next));
@@ -390,80 +342,70 @@ void testNewList(void)
 }
 
 // Test the various 14 functions.
-void testFirst(void)
-{
+void testFirst(void) {
   assert(__LINE__, check(First, -1, "|", "|", -1));
   assert(__LINE__, check(First, -1, "|37", "|37", -1));
   assert(__LINE__, check(First, -1, "3|7", "|37", -1));
   assert(__LINE__, check(First, -1, "37|", "|37", -1));
 }
 
-void testLast(void)
-{
+void testLast(void) {
   assert(__LINE__, check(Last, -1, "|", "|", -1));
   assert(__LINE__, check(Last, -1, "|37", "3|7", -1));
   assert(__LINE__, check(Last, -1, "3|7", "3|7", -1));
   assert(__LINE__, check(Last, -1, "37|", "3|7", -1));
 }
 
-void testNone(void)
-{
+void testNone(void) {
   assert(__LINE__, check(None, -1, "|", "|", true));
   assert(__LINE__, check(None, -1, "|37", "|37", false));
   assert(__LINE__, check(None, -1, "3|7", "3|7", false));
   assert(__LINE__, check(None, -1, "37|", "37|", true));
 }
 
-void testAfter(void)
-{
+void testAfter(void) {
   assert(__LINE__, check(After, -1, "|", "|", false));
   assert(__LINE__, check(After, -1, "|37", "3|7", true));
   assert(__LINE__, check(After, -1, "3|7", "37|", true));
   assert(__LINE__, check(After, -1, "37|", "37|", false));
 }
 
-void testBefore(void)
-{
+void testBefore(void) {
   assert(__LINE__, check(Before, -1, "|", "|", false));
   assert(__LINE__, check(Before, -1, "|37", "37|", true));
   assert(__LINE__, check(Before, -1, "3|7", "|37", true));
   assert(__LINE__, check(Before, -1, "37|", "37|", false));
 }
 
-void testGet(void)
-{
+void testGet(void) {
   assert(__LINE__, check(Get, -1, "|", "|", -1));
   assert(__LINE__, check(Get, -1, "|37", "|37", 3));
   assert(__LINE__, check(Get, -1, "3|7", "3|7", 7));
   assert(__LINE__, check(Get, -1, "37|", "37|", -1));
 }
 
-void testSet(void)
-{
+void testSet(void) {
   assert(__LINE__, check(Set, 5, "|", "|", false));
   assert(__LINE__, check(Set, 5, "|37", "|57", true));
   assert(__LINE__, check(Set, 5, "3|7", "3|5", true));
   assert(__LINE__, check(Set, 5, "37|", "37|", false));
 }
 
-void testInsertAfter(void)
-{
+void testInsertAfter(void) {
   assert(__LINE__, check(InsertAfter, 5, "|", "|5", -1));
   assert(__LINE__, check(InsertAfter, 5, "|37", "3|57", -1));
   assert(__LINE__, check(InsertAfter, 5, "3|7", "37|5", -1));
   assert(__LINE__, check(InsertAfter, 5, "37|", "|537", -1));
 }
 
-void testInsertBefore(void)
-{
+void testInsertBefore(void) {
   assert(__LINE__, check(InsertBefore, 5, "|", "|5", -1));
   assert(__LINE__, check(InsertBefore, 5, "|37", "|537", -1));
   assert(__LINE__, check(InsertBefore, 5, "3|7", "3|57", -1));
   assert(__LINE__, check(InsertBefore, 5, "37|", "37|5", -1));
 }
 
-void testDeleteToAfter(void)
-{
+void testDeleteToAfter(void) {
   assert(__LINE__, check(DeleteToAfter, -1, "|", "|", false));
   assert(__LINE__, check(DeleteToAfter, -1, "|37", "|7", true));
   assert(__LINE__, check(DeleteToAfter, -1, "3|7", "3|", true));
@@ -471,8 +413,7 @@ void testDeleteToAfter(void)
   assert(__LINE__, check(DeleteToAfter, -1, "|5", "|", true));
 }
 
-void testDeleteToBefore(void)
-{
+void testDeleteToBefore(void) {
   assert(__LINE__, check(DeleteToBefore, -1, "|", "|", false));
   assert(__LINE__, check(DeleteToBefore, -1, "|37", "7|", true));
   assert(__LINE__, check(DeleteToBefore, -1, "3|7", "|3", true));
@@ -480,16 +421,14 @@ void testDeleteToBefore(void)
   assert(__LINE__, check(DeleteToBefore, -1, "|5", "|", true));
 }
 
-void testReverse(void)
-{
+void testReverse(void) {
   assert(__LINE__, check(Reverse, -1, "|", "|", -1));
   assert(__LINE__, check(Reverse, -1, "|37", "7|3", -1));
   assert(__LINE__, check(Reverse, -1, "3|7", "|73", -1));
   assert(__LINE__, check(Reverse, -1, "37|", "73|", -1));
 }
 
-int main(void)
-{
+int main(void) {
   testNewList();
   testFirst();
   testLast();

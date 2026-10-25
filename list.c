@@ -152,13 +152,50 @@ void insertBefore(list *xs, itemload x)
 
 bool deleteToAfter(list *xs)
 {
-  return false;
+  if (xs->current == xs->none)
+  {
+    return false;
+  }
+  node *deleteNode = xs->current;
+  node *previous = deleteNode->back;
+  node *next = deleteNode->next;
+  previous->next = next;
+  next->back = previous;
+  xs->current = next;
+  free(deleteNode);
+  return true;
 }
+
 bool deleteToBefore(list *xs)
 {
-  return false;
+  if (xs->current == xs->none)
+  {
+    return false;
+  }
+  node *deleteNode = xs->current;
+  node *previous = deleteNode->back;
+  node *next = deleteNode->next;
+  previous->next = next;
+  next->back = previous;
+  xs->current = previous;
+  free(deleteNode);
+  return true;
 }
-void reverse(list *xs) {}
+
+void reverse(list *xs)
+{
+  node *current = xs->none->next;
+  while (current != xs->none)
+  {
+    node *next = current->next;
+    current->next = current->back;
+    current->back = next;
+    current = next;
+  }
+  node *next = xs->none->next;
+  xs->none->next = xs->none->back;
+  xs->none->back = next;
+}
 
 // Test the list module, using int as the itemload type. Strings are used as
 // 'pictograms' to describe lists. Single digits represent itemloads and the '|' symbol
@@ -463,9 +500,9 @@ int main(void)
   testSet();
   testInsertAfter();
   testInsertBefore();
-  // testDeleteToAfter();
-  // testDeleteToBefore();
-  // testReverse();
+  testDeleteToAfter();
+  testDeleteToBefore();
+  testReverse();
   printf("List module tests run OK.\n");
   return 0;
 }

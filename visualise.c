@@ -31,6 +31,7 @@ void binaryPrint(unsigned long num, size_t bits, char *output) {
   }
   output[position] = '\0';
 }
+
 // strtl will detect invalid strings however examples in instructions say to invalidate leading zeros thus explicitly checked
 bool hasLeadingZero(const char *value) {
   const char *digits = value;
@@ -45,12 +46,32 @@ void inputError(char *output) {
 
 // --- conversion functions ---
 void convert(const char *type, const char *value, char *output) {
+
+  // branch between input types
+
+  // initial check for double type as will use seperate processing
+  if (strcmp(type, "double") == 0) {
+    char *end;
+    errno = 0;
+    double number = strtod(value, &end);
+    // don't check leading zero as e.g. 0.5 still valid which leading zero would reject
+    if (end == value || *end != '\0' || errno == ERANGE) {
+      inputError(output);
+      return;
+    }
+    unsigned long bits;
+    // by using the fact a 64bit long is same length as double can directly copy the double into a long type for printing with existing function
+    memcpy(&bits, &number, sizeof(number));
+    binaryPrint(bits, sizeof(double) * CHAR_BIT, output);
+    return;
+  }
+
   // these data types must be large enough to hold the largest data type program currently supports
   long typeMaximum;
   long typeMinimum;
   size_t outputBits;
 
-  // branch between input types
+  // branch between integer types
   if (strcmp(type, "char") == 0) {
     typeMaximum = CHAR_MAX;
     typeMinimum = CHAR_MIN;
@@ -222,6 +243,33 @@ void testUnsignedInt(void) {
   assert(__LINE__, check("unsigned int", "1.5", "Input error."));
   assert(__LINE__, check("unsigned int", "-x0", "Input error."));
 }
+
+void testDouble(void) {
+  // Expected inputs
+  assert(__LINE__, check("double", "0", "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "1", "0011 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "-1", "1011 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "1.25", "0011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "-1.25", "1011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "0.5", "0011 1111 1110 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "-0.0", "1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("double", "2.5", "0100 0000 0000 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+
+  // Out-of-range inputs
+  assert(__LINE__, check("double", "1e309", "Input error."));
+  assert(__LINE__, check("double", "-1e309", "Input error."));
+  assert(__LINE__, check("double", "1e-4000", "Input error."));
+
+  // Malformed inputs
+  assert(__LINE__, check("double", "", "Input error."));
+  assert(__LINE__, check("double", "-", "Input error."));
+  assert(__LINE__, check("double", ".", "Input error."));
+  assert(__LINE__, check("double", "1.2.3", "Input error."));
+  assert(__LINE__, check("double", "12x", "Input error."));
+  assert(__LINE__, check("double", "1e", "Input error."));
+  assert(__LINE__, check("double", "-x0", "Input error."));
+}
+
 void testInvalidType(void) {
   assert(__LINE__, check("short", "7", "Input error."));
   assert(__LINE__, check("", "7", "Input error."));
@@ -233,6 +281,7 @@ void test(void) {
   testLong();
   testUnsignedChar();
   testUnsignedInt();
+  testDouble();
   testInvalidType();
   printf("All tests pass.\n");
 }

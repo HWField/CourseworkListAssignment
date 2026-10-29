@@ -16,7 +16,7 @@
 // using unsigned long to benefit from c's auto unwrapping of negative signed long via modulo ULONG_MAX + 1
 void binaryPrint(unsigned long num, size_t bits, char *output) {
   int position = 0;
-  for (size_t i = bits - 1; i >= 0; i--) {
+  for (int i = bits - 1; i >= 0; i--) {
     if ((num >> i) & 1) {
       output[position] = '1';
     } else {
@@ -63,6 +63,14 @@ void convert(const char *type, const char *value, char *output) {
     typeMaximum = LONG_MAX;
     typeMinimum = LONG_MIN;
     outputBits = sizeof(long) * CHAR_BIT;
+  } else if (strcmp(type, "unsigned char") == 0) {
+    typeMaximum = UCHAR_MAX;
+    typeMinimum = 0;
+    outputBits = sizeof(char) * CHAR_BIT;
+  } else if (strcmp(type, "unsigned int") == 0) {
+    typeMaximum = UINT_MAX;
+    typeMinimum = 0;
+    outputBits = sizeof(int) * CHAR_BIT;
   } else {
     inputError(output);
     return;
@@ -166,6 +174,54 @@ void testLong(void) {
   assert(__LINE__, check("long", "1.5", "Input error."));
 }
 
+void testUnsignedChar(void) {
+  // Expected inputs
+  assert(__LINE__, check("unsigned char", "0", "0000 0000"));
+  assert(__LINE__, check("unsigned char", "1", "0000 0001"));
+  assert(__LINE__, check("unsigned char", "7", "0000 0111"));
+  assert(__LINE__, check("unsigned char", "127", "0111 1111"));
+  assert(__LINE__, check("unsigned char", "128", "1000 0000"));
+  assert(__LINE__, check("unsigned char", "255", "1111 1111"));
+
+  // Out-of-range inputs
+  assert(__LINE__, check("unsigned char", "256", "Input error."));
+  assert(__LINE__, check("unsigned char", "-1", "Input error."));
+  assert(__LINE__, check("unsigned char", "-128", "Input error."));
+  assert(__LINE__, check("unsigned char", "999999", "Input error."));
+
+  // Malformed inputs
+  assert(__LINE__, check("unsigned char", "", "Input error."));
+  assert(__LINE__, check("unsigned char", "08", "Input error."));
+  assert(__LINE__, check("unsigned char", "-", "Input error."));
+  assert(__LINE__, check("unsigned char", "12x", "Input error."));
+  assert(__LINE__, check("unsigned char", "1.5", "Input error."));
+  assert(__LINE__, check("unsigned char", "-x0", "Input error."));
+}
+
+void testUnsignedInt(void) {
+  // Expected inputs
+  assert(__LINE__, check("unsigned int", "0", "0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check("unsigned int", "1", "0000 0000 0000 0000 0000 0000 0000 0001"));
+  assert(__LINE__, check("unsigned int", "255", "0000 0000 0000 0000 0000 0000 1111 1111"));
+  assert(__LINE__, check("unsigned int", "65535", "0000 0000 0000 0000 1111 1111 1111 1111"));
+  assert(__LINE__, check("unsigned int", "2147483647", "0111 1111 1111 1111 1111 1111 1111 1111"));
+  assert(__LINE__, check("unsigned int", "2147483648", "1000 0000 0000 0000 0000 0000 0000 0000"));
+  // explicit check boundry uint max
+  assert(__LINE__, check("unsigned int", "4294967295", "1111 1111 1111 1111 1111 1111 1111 1111"));
+
+  // Out-of-range inputs
+  assert(__LINE__, check("unsigned int", "4294967296", "Input error."));
+  assert(__LINE__, check("unsigned int", "-1", "Input error."));
+  assert(__LINE__, check("unsigned int", "-2147483648", "Input error."));
+
+  // Malformed inputs
+  assert(__LINE__, check("unsigned int", "", "Input error."));
+  assert(__LINE__, check("unsigned int", "08", "Input error."));
+  assert(__LINE__, check("unsigned int", "-", "Input error."));
+  assert(__LINE__, check("unsigned int", "12x", "Input error."));
+  assert(__LINE__, check("unsigned int", "1.5", "Input error."));
+  assert(__LINE__, check("unsigned int", "-x0", "Input error."));
+}
 void testInvalidType(void) {
   assert(__LINE__, check("short", "7", "Input error."));
   assert(__LINE__, check("", "7", "Input error."));
@@ -175,19 +231,27 @@ void test(void) {
   testChar();
   testInt();
   testLong();
+  testUnsignedChar();
+  testUnsignedInt();
   testInvalidType();
   printf("All tests pass.\n");
 }
 
 int main(int argc, char *argv[]) {
+  char output[OUTPUT_SIZE] = "";
   if (argc == 1) {
     test();
+    return 0;
   } else if (argc == 3) {
-    char output[OUTPUT_SIZE] = "";
     convert(argv[1], argv[2], output);
-    printf("%s\n", output);
+  } else if (argc == 4 && strcmp(argv[1], "unsigned") == 0) {
+    char type[sizeof("unsigned ") + strlen(argv[2])];
+    snprintf(type, sizeof(type), "unsigned %s", argv[2]);
+    convert(type, argv[3], output);
   } else {
     printf(ERROR_MESSAGE "\n");
+    return 0;
   }
+  printf("%s\n", output);
   return 0;
 }

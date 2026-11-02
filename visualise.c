@@ -238,309 +238,136 @@ bool check(char *args[], const char *expected) {
 // --- Tests for each variable type ---
 // These tests assume that Char = 8bit, Int = 32, Long = 64 as is the case on MVB Linux Lab machines used for coursework.
 // The tests simulate an argument array which is sent to the convert function in the same way a user interfacing with convert through main / program argumens would
-void testChar(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"char", "0", NULL}, "0000 0000"));
+void testDecimalInput(void) {
+  // char
   assert(__LINE__, check((char *[]){"char", "7", NULL}, "0000 0111"));
-  assert(__LINE__, check((char *[]){"char", "127", NULL}, "0111 1111"));
-  assert(__LINE__, check((char *[]){"char", "-1", NULL}, "1111 1111"));
   assert(__LINE__, check((char *[]){"char", "-128", NULL}, "1000 0000"));
+  assert(__LINE__, check((char *[]){"char", "0", NULL}, "0000 0000"));
+  assert(__LINE__, check((char *[]){"char", "127", NULL}, "0111 1111"));
 
-  // Out-of-range inputs
-  assert(__LINE__, check((char *[]){"char", "128", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "-129", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "255", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"char", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "08", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "1.5", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "-x0", NULL}, "Input error."));
-}
-
-void testInt(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"int", "0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"int", "1", NULL}, "0000 0000 0000 0000 0000 0000 0000 0001"));
-  assert(__LINE__, check((char *[]){"int", "-1", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111"));
+  // int
   assert(__LINE__, check((char *[]){"int", "10000000", NULL}, "0000 0000 1001 1000 1001 0110 1000 0000"));
-  assert(__LINE__, check((char *[]){"int", "2147483647", NULL}, "0111 1111 1111 1111 1111 1111 1111 1111"));
   assert(__LINE__, check((char *[]){"int", "-2147483648", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"int", "2147483647", NULL}, "0111 1111 1111 1111 1111 1111 1111 1111"));
 
-  // Out-of-range inputs
-  assert(__LINE__, check((char *[]){"int", "2147483648", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "-2147483649", NULL}, "Input error."));
+  // long
+  assert(__LINE__, check((char *[]){"long", "4294967296", NULL}, "0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"long", "-9223372036854775808", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"long", "9223372036854775807", NULL}, "0111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111"));
 
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"int", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "1.5", NULL}, "Input error."));
+  // unsigned char
+  assert(__LINE__, check((char *[]){"unsigned", "char", "0", NULL}, "0000 0000"));
+  assert(__LINE__, check((char *[]){"unsigned", "char", "255", NULL}, "1111 1111"));
+
+  // unsigned int
+  assert(__LINE__, check((char *[]){"unsigned", "int", "0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"unsigned", "int", "4294967295", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111"));
+
+  // double
+  assert(__LINE__, check((char *[]){"double", "-1.25", NULL}, "1011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"double", "0.0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"double", "-0.0", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  assert(__LINE__, check((char *[]){"double", "-1.7976931348623157e308", NULL}, "1111 1111 1110 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111"));
+  assert(__LINE__, check((char *[]){"double", "1.7976931348623157e308", NULL}, "0111 1111 1110 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111"));
+  assert(__LINE__, check((char *[]){"double", "2.2250738585072014e-308", NULL}, "0000 0000 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
 }
 
-void testLong(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"long", "0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"long", "1", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001"));
-  assert(__LINE__, check((char *[]){"long", "-1", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111"));
+void testBinaryInput(void) {
+  // char
+  assert(__LINE__, check((char *[]){"char", "1000", "0000", NULL}, "-128"));
+  assert(__LINE__, check((char *[]){"char", "0000", "0000", NULL}, "0"));
+  assert(__LINE__, check((char *[]){"char", "0111", "1111", NULL}, "127"));
 
-  // Values outside the int range
-  assert(__LINE__, check((char *[]){"long", "4294967296", NULL}, "0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"long", "-4294967296", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000"));
+  // int
+  assert(__LINE__, check((char *[]){"int", "0000", "0000", "1001", "1000", "1001", "0110", "1000", "0000", NULL}, "10000000"));
+  assert(__LINE__, check((char *[]){"int", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-2147483648"));
+  assert(__LINE__, check((char *[]){"int", "0111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "2147483647"));
 
-  // Exact boundaries of long
-  assert(__LINE__, check((char *[]){"long", "9223372036854775807", NULL}, "0111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111"));
-  assert(__LINE__, check((char *[]){"long", "-9223372036854775808", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+  // long
+  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "4294967296"));
+  assert(__LINE__, check((char *[]){"long", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-9223372036854775808"));
+  assert(__LINE__, check((char *[]){"long", "0111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "9223372036854775807"));
 
-  // Out-of-range inputs
+  // unsigned char
+  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0111", NULL}, "7"));
+  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0000", NULL}, "0"));
+  assert(__LINE__, check((char *[]){"unsigned", "char", "1111", "1111", NULL}, "255"));
+
+  // unsigned int
+  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
+  assert(__LINE__, check((char *[]){"unsigned", "int", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "4294967295"));
+
+  // double
+  assert(__LINE__, check((char *[]){"double", "1011", "1111", "1111", "0100", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-1.25"));
+  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
+  assert(__LINE__, check((char *[]){"double", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-0"));
+  assert(__LINE__, check((char *[]){"double", "1111", "1111", "1110", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "-1.7976931348623157e+308"));
+  assert(__LINE__, check((char *[]){"double", "0111", "1111", "1110", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "1.7976931348623157e+308"));
+  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0001", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "2.2250738585072014e-308"));
+}
+
+void testInvalidInput(void) {
+  // char
+  assert(__LINE__, check((char *[]){"char", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"char", "08", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"char", "-x0", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"char", "0000", "0002", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"char", "-129", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"char", "128", NULL}, "Input error."));
+
+  // int
+  assert(__LINE__, check((char *[]){"int", "0000", "0000", "1001", "1000", "1001", "0110", "1000", "000", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"int", "-2147483649", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"int", "2147483648", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
+
+  // long
   assert(__LINE__, check((char *[]){"long", "9223372036854775808", NULL}, "Input error."));
   assert(__LINE__, check((char *[]){"long", "-9223372036854775809", NULL}, "Input error."));
 
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"long", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"long", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"long", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"long", "1.5", NULL}, "Input error."));
-}
-
-void testUnsignedChar(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0", NULL}, "0000 0000"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "1", NULL}, "0000 0001"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "7", NULL}, "0000 0111"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "127", NULL}, "0111 1111"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "128", NULL}, "1000 0000"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "255", NULL}, "1111 1111"));
-
-  // Out-of-range inputs
-  assert(__LINE__, check((char *[]){"unsigned", "char", "256", NULL}, "Input error."));
+  // unsigned char
   assert(__LINE__, check((char *[]){"unsigned", "char", "-1", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "-128", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "999999", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"unsigned", "char", "256", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0000", "0000", NULL}, "Input error."));
 
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"unsigned", "char", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "08", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "1.5", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "-x0", NULL}, "Input error."));
-}
-
-void testUnsignedInt(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "1", NULL}, "0000 0000 0000 0000 0000 0000 0000 0001"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "255", NULL}, "0000 0000 0000 0000 0000 0000 1111 1111"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "65535", NULL}, "0000 0000 0000 0000 1111 1111 1111 1111"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "2147483647", NULL}, "0111 1111 1111 1111 1111 1111 1111 1111"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "2147483648", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000"));
-  // explicit check boundry uint max
-  assert(__LINE__, check((char *[]){"unsigned", "int", "4294967295", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111"));
-
-  // Out-of-range inputs
-  assert(__LINE__, check((char *[]){"unsigned", "int", "4294967296", NULL}, "Input error."));
+  // unsigned int
   assert(__LINE__, check((char *[]){"unsigned", "int", "-1", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "-2147483648", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"unsigned", "int", "4294967296", NULL}, "Input error."));
 
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"unsigned", "int", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "08", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "1.5", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "-x0", NULL}, "Input error."));
-}
-
-void testDouble(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"double", "0", NULL}, "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "1", NULL}, "0011 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "-1", NULL}, "1011 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "1.25", NULL}, "0011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "-1.25", NULL}, "1011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "0.5", NULL}, "0011 1111 1110 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "-0.0", NULL}, "1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-  assert(__LINE__, check((char *[]){"double", "2.5", NULL}, "0100 0000 0000 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
-
-  // Out-of-range inputs
+  // double
   assert(__LINE__, check((char *[]){"double", "1e309", NULL}, "Input error."));
   assert(__LINE__, check((char *[]){"double", "-1e309", NULL}, "Input error."));
   assert(__LINE__, check((char *[]){"double", "1e-4000", NULL}, "Input error."));
 
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"double", "", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "-", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", ".", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "1.2.3", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "12x", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "1e", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "-x0", NULL}, "Input error."));
-}
-
-void testBinaryChar(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"char", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"char", "0000", "0111", NULL}, "7"));
-  assert(__LINE__, check((char *[]){"char", "0111", "1111", NULL}, "127"));
-  assert(__LINE__, check((char *[]){"char", "1111", "1111", NULL}, "-1"));
-  assert(__LINE__, check((char *[]){"char", "1000", "0000", NULL}, "-128"));
-  assert(__LINE__, check((char *[]){"char", "1000", "0001", NULL}, "-127"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"char", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"char", "000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "00000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "0000", "000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "0000", "0002", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "100x", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"char", "", "0000", NULL}, "Input error."));
-}
-
-void testBinaryInt(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", NULL}, "1"));
-  assert(__LINE__, check((char *[]){"int", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "-1"));
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "1001", "1000", "1001", "0110", "1000", "0000", NULL}, "10000000"));
-  assert(__LINE__, check((char *[]){"int", "0111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "2147483647"));
-  assert(__LINE__, check((char *[]){"int", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-2147483648"));
-  assert(__LINE__, check((char *[]){"int", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", NULL}, "-2147483647"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "001", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0002", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "00x1", NULL}, "Input error."));
-}
-
-void testBinaryLong(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", NULL}, "1"));
-  assert(__LINE__, check((char *[]){"long", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "-1"));
-
-  // Values outside the int range
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "4294967296"));
-  assert(__LINE__, check((char *[]){"long", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-4294967296"));
-
-  // Exact boundaries of long
-  assert(__LINE__, check((char *[]){"long", "0111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "9223372036854775807"));
-  assert(__LINE__, check((char *[]){"long", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-9223372036854775808"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "001", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"long", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "000x", NULL}, "Input error."));
-}
-
-void testBinaryUnsignedChar(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0001", NULL}, "1"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0111", NULL}, "7"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0111", "1111", NULL}, "127"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "1000", "0000", NULL}, "128"));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "1111", "1111", NULL}, "255"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"unsigned", "char", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"unsigned", "char", "000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "00000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "0000", "0002", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "111x", "1111", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "char", "", "0000", NULL}, "Input error."));
-}
-
-void testBinaryUnsignedInt(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0001", NULL}, "1"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "1111", "1111", NULL}, "255"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "1111", "1111", "1111", "1111", NULL}, "65535"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "2147483647"));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "2147483648"));
-
-  // Exact boundary of unsigned int
-  assert(__LINE__, check((char *[]){"unsigned", "int", "1111", "1111", "1111", "1111", "1111", "1111", "1111", "1111", NULL}, "4294967295"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "001", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0002", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "int", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "00x1", NULL}, "Input error."));
-}
-
-void testBinaryDouble(void) {
-  // Expected inputs
-  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0"));
-  assert(__LINE__, check((char *[]){"double", "0011", "1111", "1111", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "1"));
-  assert(__LINE__, check((char *[]){"double", "1011", "1111", "1111", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-1"));
-  assert(__LINE__, check((char *[]){"double", "0011", "1111", "1111", "0100", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "1.25"));
-  assert(__LINE__, check((char *[]){"double", "1011", "1111", "1111", "0100", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-1.25"));
-  assert(__LINE__, check((char *[]){"double", "0011", "1111", "1110", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "0.5"));
-  assert(__LINE__, check((char *[]){"double", "1000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "-0"));
-  assert(__LINE__, check((char *[]){"double", "0100", "0000", "0000", "0100", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "2.5"));
-
-  // Check significant digit precision
-  assert(__LINE__, check((char *[]){"double", "0011", "1111", "1011", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1001", "1010", NULL}, "0.10000000000000001"));
-
-  // Incorrect number of nibbles
-  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", NULL}, "Input error."));
-
-  // Malformed inputs
-  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "000", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"double", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000", "000x", NULL}, "Input error."));
-}
-
-void testBinaryInvalidType(void) {
-  assert(__LINE__, check((char *[]){"short", "0000", "0111", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"", "0000", "0111", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", "short", "0000", "0111", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"unsigned", NULL}, "Input error."));
-}
-
-void testInvalidType(void) {
+  // Unsupported type
   assert(__LINE__, check((char *[]){"short", "7", NULL}, "Input error."));
-  assert(__LINE__, check((char *[]){"", "7", NULL}, "Input error."));
+}
+
+void testStructuredInput(void) {
+  // both assignment examples
+  const char *example = "0000 0111 0000 0000 1001 1000 1001 0110 1000 0000 1111 1111";
+  assert(__LINE__, check((char *[]){"{char;int;unsigned char}", "7", "10000000", "255", NULL}, example));
+  assert(__LINE__, check((char *[]){"{char;int;unsigned char}", "0000", "0111", "0000", "0000", "1001", "1000", "1001", "0110", "1000", "0000", "1111", "1111", NULL}, "7 10000000 255"));
+  assert(__LINE__, check((char *[]){"{char;int;unsigned", "char}", "7", "10000000", "255", NULL}, example));
+
+  // a valid structure whose output exceeds one scalar buffer.
+  assert(__LINE__, check((char *[]){"{long;double}", "-1", "1.25", NULL}, "1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 "
+                                                                          "0011 1111 1111 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"));
+
+  // malformed types, an invalid value in a later field, and mixed input.
+  assert(__LINE__, check((char *[]){"{char;int", "7", "1", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"{char;;int}", "7", "1", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"{char;int;unsigned char}", "7", "10000000", "256", NULL}, "Input error."));
+  assert(__LINE__, check((char *[]){"{char;char}", "7", "0000", "0111", NULL}, "Input error."));
 }
 
 void test(void) {
-  testChar();
-  testInt();
-  testLong();
-  testUnsignedChar();
-  testUnsignedInt();
-  testDouble();
-  testBinaryChar();
-  testBinaryInt();
-  testBinaryLong();
-  testBinaryUnsignedChar();
-  testBinaryUnsignedInt();
-  testBinaryDouble();
-  testBinaryInvalidType();
-  testInvalidType();
+  testDecimalInput();
+  testBinaryInput();
+  testInvalidInput();
+  testStructuredInput();
   printf("All tests pass.\n");
 }
-
 int main(int argc, char *argv[]) {
   if (argc == 1) {
     test();
